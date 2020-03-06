@@ -12,7 +12,7 @@ EFS is used for storing home directories.
 
 #### Compute Instance Type
 
-We must use intel processors, BWA has an issue running on any AMD processors (noted by a in the instance name)
+We must use intel processors, BWA has an issue running on any AMD processors (noted by an "a" in the instance name)
 
 Since we use spot instances to reduce cost as aws batch we need to select an instance type that has low interruption.
 
@@ -23,7 +23,7 @@ Looking at the document, the new group of instances m5dn.12xlarge has a high cor
 The other option is c5n.18xlarge which has 72 threads 192gb memory, has a cost savings at $3.06/hr * (1 - .82) = **$0.55/hr**
 
 |  INSTANCE TYPE    |  COST/HR  | SAVINGS  | NEW COST/HR
-|---|---|---|---|---|
+|---|---|---|---
 | m5dn.12xlarge |  $3.264   | 85%  | $0.50
 | c5n.18xlarge  |  $3.06    | 82%  | $0.55
 
