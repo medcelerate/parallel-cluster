@@ -14,11 +14,7 @@ S3FS installed on the master node only to allow copying of data from s3 into the
 
 #### Compute Instance Type
 
-<<<<<<< HEAD
-We must use intel processors, BWA has an issue running on any AMD processors (noted by the letter a in the instance name).
-=======
 We must use intel processors, BWA has an issue running on any AMD processors (noted by an "a" in the instance name)
->>>>>>> e870dbe770b110cd043dbf7d2d78e0b66ac263be
 
 Since we use spot instances to reduce cost as aws batch we need to select an instance type that has low interruption.
 
@@ -55,7 +51,7 @@ We keep 1 compute node constantly alive in order to kick off workloads without h
 - Monthly sync of reference files to disk
 
 
-### Deploying parallel-cluster
+### Deploying Parallel-Cluster
 
 Before running this make sure your aws cli is setup with ```aws configure```.
 
@@ -79,6 +75,39 @@ To deploy using this file run
 
 ```bash
 pcluster create -c ./PC-Prod-Built.cfg pcprod --norollback
+```
+
+### Useful PCluster Commands
+
+#### Update a cluster
+
+```bash
+pcluster update -c {config file} {cluster name}
+pcluster update -c ./aws.conf gridcluster
+```
+
+#### Delete a cluster
+
+```bash
+pcluster delete -c {config file} {cluster name}
+pcluster delete -c ./aws.conf gridcluster
+```
+
+#### Get cluster info
+
+Returns info relevant to a cluster in the format below.
+
+
+```bash
+pcluster status -c {config file} {cluster name}
+pcluster status -c ./aws.conf gridcluster
+```
+Returns:
+```
+Status: CREATE_COMPLETE
+MasterServer: RUNNING
+ClusterUser: ec2-user
+MasterPrivateIP: 10.0.0.66
 ```
 
 ### Useful SLURM Commands
