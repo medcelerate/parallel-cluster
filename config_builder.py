@@ -13,10 +13,10 @@ def main():
 
     config = configparser.ConfigParser()
     config.read("PC-Prod.cfg")
-    config['cluster pcprod']['post_install_args'] = " ".join([args.cromwell_user, 
+    config['cluster pcprod']['post_install_args'] = '"' + " ".join([args.cromwell_user, 
                                                             args.cromwell_password, 
                                                             args.s3_key, 
-                                                            args.s3_secret])
+                                                            args.s3_secret]) + '"'
 
     with open('PC-Prod-Built.cfg', 'w') as fp:
         config.write(fp)
