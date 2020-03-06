@@ -74,7 +74,10 @@ def install_glauth():
         print("Failed to get hostname.")
         sys.exit(1)
 
-    contents = urllib2.urlopen("")
+    rc = os.system("cd /opt/glauth && wget %s" % ("https://gitlab.com/iidsgt/parallel-cluster/-/raw/master/glauth.cfg"))
+    if rc != 0:
+        print("Failed to download glauth config file.")
+        sys.exit(1)
 
     service_file = """
 [Unit]
