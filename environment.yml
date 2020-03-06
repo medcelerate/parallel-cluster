@@ -1,0 +1,9 @@
+name: pcluster
+channels:
+    - anaconda
+    - conda-forge
+dependencies:
+    - python=3.8
+    - pip
+    - pip:
+        - aws-parallelcluster==2.6.0

@@ -10,9 +10,11 @@ FSX is the high performance scratch space,
 
 EFS is used for storing home directories.
 
+S3FS installed on the master node only to allow copying of data from s3 into the work directories.
+
 #### Compute Instance Type
 
-We must use intel processors, BWA has an issue running on any AMD processors (noted by a in the instance name)
+We must use intel processors, BWA has an issue running on any AMD processors (noted by the letter a in the instance name).
 
 Since we use spot instances to reduce cost as aws batch we need to select an instance type that has low interruption.
 
@@ -48,6 +50,70 @@ We keep 1 compute node constantly alive in order to kick off workloads without h
 - Monthly dump of docker cache
 - Monthly sync of reference files to disk
 
+
+### Deploying parallel-cluster
+
+Before running this make sure your aws cli is setup with ```aws configure```.
+
+First clone the repo and setup the conda env included in the repo and install the latest parallel cluster.
+
+```bash
+git clone https://gitlab.com/iidsgt/parallel-cluster.git
+cd parallel-cluster
+conda env create -f environment.yml
+```
+
+Next, run the the script to add arguments to the parallel cluster config.
+
+```
+python config_builder.py --cromwell_user={cromwell db username} --cromwell_password={cromwell db password} --s3_key={s3_key_id} --s3_secret={s3_key_secret}
+```
+
+This will write a file called ```PC-Prod-Built.cfg``` that can be run with the pcluster command.
+
+To deploy using this file run
+
+```bash
+pcluster create -c ./PC-Prod-Built.cfg pcprod --norollback
+```
+
+### Useful SLURM Commands
+
+#### Submit an interactive job
+
+```bash
+srun -p compute {command here}
+srun -p compute hostname
+```
+
+#### Submit an asynchronous job
+
+This will submit a job to the queue and write the stdout and stderr to a file of the name slurm-{jobid}.out
+
+```bash
+sbatch -p compute --wrap="{command here}"
+sbatch -p compute --wrap="hostname"
+```
+
+#### See the current queue
+
+```bash
+squeue
+```
+
+#### Get job information
+
+```bash
+scontrol show job {jobid}
+scontrol show job 4617
+```
+
+#### Cancel a job
+
+```bash
+scancel {jobid}
+scancel 4617
+```
 
 ### Notes
 
