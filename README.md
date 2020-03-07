@@ -110,6 +110,17 @@ ClusterUser: ec2-user
 MasterPrivateIP: 10.0.0.66
 ```
 
+### Tests
+
+To run tests on the post install python script simply clone the rpo and build and run the compute and master dockerfiles.
+
+```
+git clone https://gitlab.com/iidsgt/parallel-cluster.git
+docker build -t master -f ./tests/Master.Dockerfile . && docker run master
+docker build -t compute -f ./tests/Compute.Dockerfile . && docker run compute
+
+```
+
 ### Useful SLURM Commands
 
 #### Submit an interactive job

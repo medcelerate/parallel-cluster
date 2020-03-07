@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+# -*- coding: utf-8 -*-
 """
 Script that uses the python stdlib to install necessary cluster dependencies.
 
@@ -14,7 +14,7 @@ Installs:
         - ldap-client
         - Docker
 
-Takes in 5 position arguments: {cromwell_db_name} {cromwell_db_user} {cromwell_db_password} {S3_Key} {S3_Secret}
+Takes in 5 position arguments: {cromwell_db_user} {cromwell_db_password} {S3_Key} {S3_Secret} {bucket_name}
 """
 
 import os
@@ -24,13 +24,16 @@ import subprocess
 import socket 
 import shutil
 import urllib2
+import json
 
 
 def install_utils():
-    rc = os.system("yum -y install java-1.8.0 fuse-utils")
+    rc = os.system("yum install -y java-1.8.0 fuse-utils openssl wget")
     if rc != 0:
         print("Failed at installing java and fuse-utils.")
         sys.exit(1)
+
+    return 0
 
 # Generates self-signed ssl certifcate for glauth which handles user and group management.
 def generate_ldap_ssl_cert():
@@ -51,15 +54,22 @@ sudo openssl req  -new -x509 -nodes -keyout ldap.key -out ldap.crt -days 3600 \
     shutil.copy2("./ldap.key", "/opt/glauth")
     shutil.copy2("./ldap.crt", "/efs/certs")
 
-    
-
+    return 0
 
 # Download glauth, install and setup ldap service.
 def install_glauth():
-    os.makedirs("/opt/glauth")
+    try:
+        os.makedirs("/opt/glauth")
+    except:
+        pass
+
+    try:
+        os.makedirs("/efs/opt")
+    except:
+        pass
 
     contents = urllib2.urlopen("https://api.github.com/repos/glauth/glauth/releases/latest").read()
-    glauth_release = json.loads(contents)['assets'][0]
+    glauth_release = json.loads(contents)['assets'][10]
     glauth_url = glauth_release['browser_download_url']
     glauth_name = glauth_release['name']
 
@@ -86,12 +96,12 @@ Description=Glauth
 [Service]
 Type=simple
 WorkingDirectory=/opt/glauth/
-ExecStart=/opt/glauth/glauth -c /opt/glauth/glauth.cfg
+ExecStart=/opt/glauth/{} -c /opt/glauth/glauth.cfg
 Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
-"""
+""".format(glauth_name)
 
     with open("/etc/systemd/system/glauth.service", "w") as fp:
         fp.write(service_file)
@@ -101,13 +111,14 @@ WantedBy=multi-user.target
 
     rc = os.system("sudo systemctl enable glauth")
     if rc != 0:
-        print("Failed at enabling docker daemon.")
+        print("Failed at enabling glauth daemon.")
         sys.exit(1)
     rc = os.system("sudo systemctl start glauth")
     if rc != 0:
-        print("Failed at starting docker daemon.")
+        print("Failed at starting glauth daemon.")
         sys.exit(1)
 
+    return 0
 
 # Install ldap client and bind into the directory.
 def install_ldap_client():
@@ -116,15 +127,16 @@ def install_ldap_client():
         print("Failed at installing ldap client.")
         sys.exit(1)
 
-    rc = os.system('authconfig --enableldap --enableldapauth --ldapserver=$(cat /efs/opt/hostname) \
-                    --ldapbasedn="dc=pcprod,dc=com" --enableldaptls -–enablemkhomedir --update')
+    rc = os.system("""authconfig --enableldap --enableldapauth --ldapserver=$(cat /efs/opt/hostname) --ldapbasedn="dc=pcprod,dc=com" --enableldaptls --enablemkhomedir --update""")
     if rc != 0:
         print("Failed at setting ldap client.")
         sys.exit(1)
 
+    return 0
+
 # Install and start docker service.
 def install_docker():
-    rc = os.system("sudo amazon-linux-extras -y install docker")
+    rc = os.system("sudo amazon-linux-extras install -y docker")
     if rc != 0:
         print("Failed at installing docker.")
         sys.exit(1)
@@ -137,6 +149,7 @@ def install_docker():
         print("Failed at starting docker daemon.")
         sys.exit(1)
 
+    return 0
 
 # Install s3fs on the master node.
 def install_goofys(s3_key, s3_secret, bucket_name):
@@ -163,7 +176,9 @@ aws_secret_access_key = {2}
     if rc != 0:
         print("Failed at adding fstab entry for goofys.")
         sys.exit(1)
-# Add S3Fs keys as arguments
+
+    return 0
+
 
 # Download and install cromwell, setup service and enable cromwell.
 def install_cromwell(cromwell_user, cromwell_password):
@@ -237,6 +252,8 @@ WantedBy=multi-user.target
         print("Failed at starting cromwell.")
         sys.exit(1)
 
+    return 0
+
 
 def main():
     #instanceid = urllib2.urlopen('http://169.254.169.254/latest/meta-data/instance-id').read()
@@ -254,6 +271,7 @@ def main():
     cromwell_password = sys.argv[2]
     s3_key = sys.argv[3]
     s3_secret = sys.argv[4]
+    bucket_name = sys.argv[5]
 
     with open("/etc/parallelcluster/cfnconfig") as fp:
         for line in fp.readlines():
@@ -265,7 +283,7 @@ def main():
     if instance_type == "MasterServer":
         install_utils()
         install_docker()
-        install_s3fs(s3_key, s3_secret)
+        install_goofys(s3_key, s3_secret, bucket_name)
         install_glauth()
         install_cromwell(cromwell_user, cromwell_password)
 

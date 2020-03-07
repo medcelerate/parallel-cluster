@@ -8,7 +8,7 @@ def main():
     parser.add_argument("--cromwell_password", action="store", help="Set the database user will use.", required=True)
     parser.add_argument("--s3_key", action="store", help="Set the aws client key id.", required=True)
     parser.add_argument("--s3_secret", action="store", help="Set the aws client key secret.", required=True)
-
+    parser.add_argument("--bucket_name", action="store", help="Set the S3 bucket you want to mount", required=True)
     args = parser.parse_args()
 
     config = configparser.ConfigParser()
@@ -16,7 +16,9 @@ def main():
     config['cluster pcprod']['post_install_args'] = '"' + " ".join([args.cromwell_user, 
                                                             args.cromwell_password, 
                                                             args.s3_key, 
-                                                            args.s3_secret]) + '"'
+                                                            args.s3_secret],
+                                                            args.bucket_name
+                                                            ) + '"'
 
     with open('PC-Prod-Built.cfg', 'w') as fp:
         config.write(fp)
