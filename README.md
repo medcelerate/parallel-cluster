@@ -114,11 +114,12 @@ MasterPrivateIP: 10.0.0.66
 
 To run tests on the post install python script simply clone the rpo and build and run the compute and master dockerfiles.
 
+***Tests will fail! Specifically the systemd start commands as systemd in docker is very difficult to get running without privileged containers. ***
+
 ```
 git clone https://gitlab.com/iidsgt/parallel-cluster.git
 docker build -t master -f ./tests/Master.Dockerfile . && docker run master
 docker build -t compute -f ./tests/Compute.Dockerfile . && docker run compute
-
 ```
 
 ### Useful SLURM Commands
