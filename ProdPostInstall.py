@@ -28,7 +28,7 @@ import json
 
 
 def install_utils():
-    rc = os.system("yum install -y java-1.8.0 fuse-utils openssl wget")
+    rc = subprocess.check_call(["yum", "install", "-y", "java-1.8.0", "fuse-utils", "openssl", "wget"])
     if rc != 0:
         print("Failed at installing java and fuse-utils.")
         sys.exit(1)
@@ -41,12 +41,10 @@ def generate_ldap_ssl_cert():
     os.makedirs("/efs/certs")
     os.makedirs("/opt/glauth")
 
-    script = """
-sudo openssl req  -new -x509 -nodes -keyout ldap.key -out ldap.crt -days 3600 \
--subj "/C=US/ST=NY/L=MSSM/O=MSSM/OU=IIDSGT/CN=$(hostname)"
-"""
-
-    rc = os.system(script)
+    rc = subprocess.check_call(" ".join(["sudo", "openssl", "req", "-new", "-x509", 
+                    "-nodes", "-keyout", "ldap.key", "-out", "ldap.crt",
+                    "-days", "3600", "-subj", "/C=US/ST=NY/L=MSSM/O=MSSM/OU=IIDSGT/CN=$(hostname)"]),
+                    shell=True)
     if rc != 0:
         print("Failed at creating openssl.")
         sys.exit(1)
@@ -58,6 +56,7 @@ sudo openssl req  -new -x509 -nodes -keyout ldap.key -out ldap.crt -days 3600 \
 
 # Download glauth, install and setup ldap service.
 def install_glauth():
+    env = os.environ.copy()
     try:
         os.makedirs("/opt/glauth")
     except:
@@ -73,7 +72,9 @@ def install_glauth():
     glauth_url = glauth_release['browser_download_url']
     glauth_name = glauth_release['name']
 
-    rc = os.system("cd /opt/glauth && wget %s" % (glauth_url))
+    rc = subprocess.check_call("cd /opt/glauth && wget %s \
+                                && chmod +x /opt/glauth/%s" % (glauth_url, glauth_name), 
+                                shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at downloading glauth.")
         sys.exit(1)
@@ -84,7 +85,9 @@ def install_glauth():
         print("Failed to get hostname.")
         sys.exit(1)
 
-    rc = os.system("cd /opt/glauth && wget %s" % ("https://gitlab.com/iidsgt/parallel-cluster/-/raw/master/glauth.cfg"))
+    rc = subprocess.check_call("cd /opt/glauth && wget \
+                                https://gitlab.com/iidsgt/parallel-cluster/-/raw/master/glauth.cfg", 
+                                shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed to download glauth config file.")
         sys.exit(1)
@@ -109,11 +112,12 @@ WantedBy=multi-user.target
     with open("/efs/opt/hostname", "w") as fp:
         fp.write(host_name)
 
-    rc = os.system("sudo systemctl enable glauth")
+    rc = subprocess.check_call("sudo systemctl enable glauth", shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at enabling glauth daemon.")
         sys.exit(1)
-    rc = os.system("sudo systemctl start glauth")
+
+    rc = subprocess.check_call("sudo systemctl start glauth", shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at starting glauth daemon.")
         sys.exit(1)
@@ -122,12 +126,12 @@ WantedBy=multi-user.target
 
 # Install ldap client and bind into the directory.
 def install_ldap_client():
-    rc = os.system("yum install -y openldap-clients pam_ldap nss-pam-ldapd authconfig")
+    rc = subprocess.check_call("yum install -y openldap-clients pam_ldap nss-pam-ldapd authconfig", shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at installing ldap client.")
         sys.exit(1)
 
-    rc = os.system("""authconfig --enableldap --enableldapauth --ldapserver=$(cat /efs/opt/hostname) --ldapbasedn="dc=pcprod,dc=com" --enableldaptls --enablemkhomedir --update""")
+    rc = subprocess.check_call("""authconfig --enableldap --enableldapauth --ldapserver=$(cat /efs/opt/hostname) --ldapbasedn="dc=pcprod,dc=com" --enableldaptls --enablemkhomedir --update""", shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at setting ldap client.")
         sys.exit(1)
@@ -136,15 +140,15 @@ def install_ldap_client():
 
 # Install and start docker service.
 def install_docker():
-    rc = os.system("sudo amazon-linux-extras install -y docker")
+    rc = subprocess.check_call("sudo amazon-linux-extras install -y docker", shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at installing docker.")
         sys.exit(1)
-    rc = os.system("sudo systemctl enable docker")
+    rc = subprocess.check_call("sudo systemctl enable docker", shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at enabling docker daemon.")
         sys.exit(1)
-    rc = os.system("sudo systemctl start docker")
+    rc = subprocess.check_call("sudo systemctl start docker", shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at starting docker daemon.")
         sys.exit(1)
@@ -156,22 +160,22 @@ def install_goofys(s3_key, s3_secret, bucket_name):
     os.makedirs("/s3/%s" % (bucket_name))
     os.makedirs("/root/.aws")
 
-    rc = os.system("cd /usr/bin/ && sudo wget https://github.com/kahing/goofys/releases/latest/download/goofys")
+    rc = subprocess.check_call("cd /usr/bin/ && sudo wget https://github.com/kahing/goofys/releases/latest/download/goofys", shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at installing Goofys")
         sys.exit(1)
 
     credentials = """
 [default]
-aws_access_key_id = {1}
-aws_secret_access_key = {2}
+aws_access_key_id = {}
+aws_secret_access_key = {}
 """.format(s3_key, s3_secret)
 
     with open("/root/.aws/credentials", "w") as fp:
         fp.write(credentials)
 
-    rc = os.system("echo 'goofys#%s   /s3/%s       fuse     _netdev,allow_other,--file-mode=0666,--dir-mode=0777    0       0' \
-                    >> /etc/fstab" % (bucket_name, bucket_name))
+    rc = subprocess.check_call("echo 'goofys#%s   /s3/%s       fuse     _netdev,allow_other,--file-mode=0666,--dir-mode=0777    0       0' \
+                    >> /etc/fstab" % (bucket_name, bucket_name), shell=True, executable="/bin/bash")
 
     if rc != 0:
         print("Failed at adding fstab entry for goofys.")
@@ -194,7 +198,7 @@ def install_cromwell(cromwell_user, cromwell_password):
     cromwell_url = cromwell_release['browser_download_url']
     cromwell_name = cromwell_release['name']
 
-    rc = os.system("cd /opt/cromwell && wget %s" % (cromwell_url))
+    rc = subprocess.check_call("cd /opt/cromwell && wget %s" % (cromwell_url), shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at downloading cromwell.")
         sys.exit(1)
@@ -219,7 +223,7 @@ java8 -Dconfig.file=/opt/cromwell/cromwell.conf -jar /opt/cromwell/{} server >> 
     with open("/opt/cromwell/cromwell.conf", "w") as fp:
         fp.write(cromwell_config)
 
-    rc = os.system("chmod +x /opt/cromwell/run_cromwell_server.sh")
+    rc = subprocess.check_call("chmod +x /opt/cromwell/run_cromwell_server.sh", shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at making cromwell script executable.")
         sys.exit(1)
@@ -241,13 +245,13 @@ WantedBy=multi-user.target
     with open("/etc/systemd/system/cromwell.service", "w") as fp:
         fp.write(service_file)
 
-    rc = os.system("sudo systemctl enable cromwell")
+    rc = subprocess.check_call("sudo systemctl enable cromwell", shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at enabling cromwell.")
         sys.exit(1)
 
 
-    rc = os.system("sudo systemctl start cromwell")
+    rc = subprocess.check_call("sudo systemctl start cromwell", shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at starting cromwell.")
         sys.exit(1)
