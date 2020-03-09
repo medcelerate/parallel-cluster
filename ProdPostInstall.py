@@ -28,7 +28,7 @@ import json
 
 
 def install_utils():
-    rc = subprocess.check_call(["yum", "install", "-y", "java-1.8.0", "fuse-utils", "openssl", "wget"])
+    rc = subprocess.check_call(["yum", "install", "-y", "java-1.8.0", "fuse-utils", "openssl", "wget", "zsh"])
     if rc != 0:
         print("Failed at installing java and fuse-utils.")
         sys.exit(1)
@@ -121,6 +121,8 @@ WantedBy=multi-user.target
     if rc != 0:
         print("Failed at starting glauth daemon.")
         sys.exit(1)
+
+    contents = urllib2.urlopen("")
 
     return 0
 

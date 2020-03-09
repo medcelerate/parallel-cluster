@@ -10,8 +10,7 @@ RUN pip install pytest
 RUN wget https://raw.githubusercontent.com/gdraheim/docker-systemctl-replacement/master/files/docker/systemctl.py -O /bin/systemctl && chmod +x /bin/systemctl
 
 WORKDIR /test
-COPY tests/test_master.py tests/
-COPY ProdPostInstall.py ./tests/
-COPY tests/run_test.sh /test
+COPY test_master.py tests/
+COPY ../../ProdPostInstall.py ./tests/
 
 CMD ["pytest"]
