@@ -25,6 +25,8 @@ import socket
 import shutil
 import urllib2
 import json
+import configparser
+import StringIO
 
 
 def install_utils():
@@ -51,6 +53,8 @@ def generate_ldap_ssl_cert():
     
     shutil.copy2("./ldap.key", "/opt/glauth")
     shutil.copy2("./ldap.crt", "/efs/certs")
+
+    subprocess.check_call(["echo", "tls_reqcert allow", ">>", "/etc/nslcd.conf"])
 
     return 0
 
@@ -122,7 +126,7 @@ WantedBy=multi-user.target
         print("Failed at starting glauth daemon.")
         sys.exit(1)
 
-    contents = urllib2.urlopen("")
+    #Generate config for klp to allow for ssh public key authentication.
 
     return 0
 
@@ -133,9 +137,29 @@ def install_ldap_client():
         print("Failed at installing ldap client.")
         sys.exit(1)
 
-    rc = subprocess.check_call("""authconfig --enableldap --enableldapauth --ldapserver=$(cat /efs/opt/hostname) --ldapbasedn="dc=pcprod,dc=com" --enableldaptls --enablemkhomedir --update""", shell=True, executable="/bin/bash")
+    rc = subprocess.check_call("""authconfig --enableldapauth --ldapserver=ldaps://$(cat /efs/opt/hostname):389 --ldapbasedn=dc=pcprod,dc=com --enablemkhomedir --update""", shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at setting ldap client.")
+        sys.exit(1)
+
+    rc = subprocess.check_call("cd /opt/ && wget https://gitlab.com/iidsgt/parallel-cluster/-/raw/master/ldap_authenticator.py \
+                                && chmod +x ldap_authenticator.py", shell=True, executable="/bin/bash")
+    if rc != 0:
+        print("Failed at downloading ldap authenticator.")
+        sys.exit(1)
+
+    with open("/opt/ltpsecret", "w") as fp:
+        fp.write("55ew7o9fhdakjvnpds98rt857tbb")
+
+    rc = subprocess.check_call('echo "AuthorizedKeysCommand /opt/ldap_authenticator.py" >> /etc/ssh/sshd_config',
+                                shell=True, executable="/bin/bash")
+    if rc != 0:
+        print("Failed at adding config line to SSHD")
+        sys.exit(1)
+
+    rc = subprocess.check_call("sudo systemctl restart sshd", shell=True, executable="/bin/bash")
+    if rc != 0:
+        print("Failed at restarting sshd")
         sys.exit(1)
 
     return 0
