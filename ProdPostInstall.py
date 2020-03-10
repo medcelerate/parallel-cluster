@@ -332,3 +332,6 @@ def main():
     else:
         install_docker()
         install_ldap_client()
+
+if __name__ == "__main__":
+    main()
