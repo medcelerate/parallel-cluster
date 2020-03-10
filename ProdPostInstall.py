@@ -336,6 +336,7 @@ def main():
         generate_ldap_ssl_cert()
         install_goofys(s3_key, s3_secret, bucket_name)
         install_glauth()
+        install_ldap_client()
         install_cromwell(cromwell_user, cromwell_password)
 
     else:
