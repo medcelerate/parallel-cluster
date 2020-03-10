@@ -209,14 +209,14 @@ def install_goofys(s3_key, s3_secret, bucket_name):
         print("Failed at installing Goofys")
         sys.exit(1)
 
-    credentials = """
-[default]
-aws_access_key_id = {}
-aws_secret_access_key = {}
-""".format(s3_key, s3_secret)
+#     credentials = """
+# [default]
+# aws_access_key_id = {}
+# aws_secret_access_key = {}
+# """.format(s3_key, s3_secret)
 
-    with open("/root/.aws/credentials", "w") as fp:
-        fp.write(credentials)
+#     with open("/root/.aws/credentials", "w") as fp:
+#         fp.write(credentials)
 
     rc = subprocess.check_call("echo 'goofys#%s   /s3/%s       fuse     _netdev,allow_other,--file-mode=0666,--dir-mode=0777    0       0' \
                     >> /etc/fstab" % (bucket_name, bucket_name), shell=True, executable="/bin/bash")
