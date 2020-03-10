@@ -1,4 +1,4 @@
-import ProdPostInstall
+from .. import ProdPostInstall
 import pytest
 
 def test_install_utils():
@@ -19,3 +19,7 @@ def test_install_ldap():
 
 def test_install_goofys():
     assert ProdPostInstall.install_goofys("hfjdskfhdjskhdj", "fjdkjfhdskfbhj", "bucket") == 0
+
+
+
+    

@@ -37,6 +37,14 @@ def install_utils():
 
     return 0
 
+def add_users():
+    rc = subprocess.check_call("sudo useradd cromwell", shell=True, executable="/bin/bash")
+    if rc != 0:
+        print("Failed at adding cromwell user.")
+        sys.exit(1)
+
+    return 0
+
 # Generates self-signed ssl certifcate for glauth which handles user and group management.
 def generate_ldap_ssl_cert():
 
@@ -102,6 +110,7 @@ Description=Glauth
 
 [Service]
 Type=simple
+User=cromwell
 WorkingDirectory=/opt/glauth/
 ExecStart=/opt/glauth/{} -c /opt/glauth/glauth.cfg
 Restart=on-failure
