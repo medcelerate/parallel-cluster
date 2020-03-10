@@ -25,8 +25,12 @@ import socket
 import shutil
 import urllib2
 import json
-import configparser
 import StringIO
+
+if sys.version_info[0] == 2:
+    import ConfigParser as configparser
+else:
+    import configparser
 
 
 def install_utils():

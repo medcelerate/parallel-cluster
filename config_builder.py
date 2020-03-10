@@ -16,8 +16,8 @@ def main():
     config['cluster pcprod']['post_install_args'] = '"' + " ".join([args.cromwell_user, 
                                                             args.cromwell_password, 
                                                             args.s3_key, 
-                                                            args.s3_secret],
-                                                            args.bucket_name
+                                                            args.s3_secret,
+                                                            args.bucket_name]
                                                             ) + '"'
 
     with open('PC-Prod-Built.cfg', 'w') as fp:
