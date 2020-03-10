@@ -249,7 +249,7 @@ def install_cromwell(cromwell_user, cromwell_password):
 
     cromwell_script = """
 #!/bin/bash
-java8 -Dconfig.file=/opt/cromwell/cromwell.conf -jar /opt/cromwell/{} server >> /tmp/cromwell.log
+java -Dconfig.file=/opt/cromwell/cromwell.conf -jar /opt/cromwell/{} server >> /tmp/cromwell.log
 """.format(cromwell_name)
 
     with open("/opt/cromwell/run_cromwell_server.sh", "w") as fp:
@@ -333,6 +333,7 @@ def main():
         install_utils()
         add_users()
         install_docker()
+        generate_ldap_ssl_cert()
         install_goofys(s3_key, s3_secret, bucket_name)
         install_glauth()
         install_cromwell(cromwell_user, cromwell_password)
