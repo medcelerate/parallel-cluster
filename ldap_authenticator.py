@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+"""
+Takes in 1 argument provided by sshd: {username}.
+ldap_authenticator.py {user}
+Prints the authorized ssh keys that can be used to access the cluster for each user.
+"""
+
 import subprocess
 import sys
 
