@@ -1,4 +1,4 @@
-from .. import ProdPostInstall
+import ProdPostInstall
 import pytest
 
 def test_install_utils():
@@ -22,4 +22,3 @@ def test_install_goofys():
 
 
 
-    

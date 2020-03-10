@@ -118,7 +118,7 @@ To run tests on the post install python script simply clone the rpo and build an
 
 ```
 git clone https://gitlab.com/iidsgt/parallel-cluster.git
-docker build -t master -f ./tests/Master.Dockerfile . && docker run master
+docker build -t master -f ./tests/post-script/Master.Dockerfile . && docker run master
 ```
 
 ### Useful SLURM Commands
