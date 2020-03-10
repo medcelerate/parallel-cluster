@@ -155,6 +155,7 @@ WantedBy=multi-user.target
 
     rc = subprocess.check_call("sudo systemctl restart sshd", shell=True, executable="/bin/bash")
     if rc != 0:
+        print(subprocess.check_output("sudo systemctl status sshd", shell=True, executable="/bin/bash"))
         print("Failed at restarting sshd")
         sys.exit(1)
 
