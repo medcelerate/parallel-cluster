@@ -66,7 +66,10 @@ def generate_ldap_ssl_cert():
     shutil.copy2("./ldap.key", "/opt/glauth")
     shutil.copy2("./ldap.crt", "/efs/certs")
 
-    subprocess.check_call(["echo", "tls_reqcert allow", ">>", "/etc/nslcd.conf"])
+    rc = subprocess.check_call(["echo", "tls_reqcert allow", ">>", "/etc/nslcd.conf"])
+    if rc != 0:
+        print("Failed at adding tls req to nslcd config.")
+        sys.exit(1)
 
     return 0
 
