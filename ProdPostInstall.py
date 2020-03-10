@@ -110,7 +110,6 @@ Description=Glauth
 
 [Service]
 Type=simple
-User=cromwell
 WorkingDirectory=/opt/glauth/
 ExecStart=/opt/glauth/{} -c /opt/glauth/glauth.cfg
 Restart=on-failure
@@ -269,6 +268,7 @@ Description=Starts the Cromwell server
 
 [Service]
 Type=simple
+User=cromwell
 ExecStart=/opt/cromwell/run_cromwell_server.sh
 
 [Install]
@@ -319,6 +319,7 @@ def main():
 
     if instance_type == "MasterServer":
         install_utils()
+        add_users()
         install_docker()
         install_goofys(s3_key, s3_secret, bucket_name)
         install_glauth()
