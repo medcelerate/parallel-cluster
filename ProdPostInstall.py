@@ -34,7 +34,7 @@ else:
 
 
 def install_utils():
-    rc = subprocess.check_call(["yum", "install", "-y", "java-1.8.0", "fuse-utils", "openssl", "wget", "zsh"])
+    rc = subprocess.check_call(["yum", "install", "-y", "java-1.8.0", "fuse-utils", "openssl", "wget", "zsh", "rbash"])
     if rc != 0:
         print("Failed at installing java and fuse-utils.")
         sys.exit(1)
@@ -151,6 +151,13 @@ WantedBy=multi-user.target
                                 shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at adding config line to SSHD")
+        sys.exit(1)
+
+    
+    rc = subprocess.check_call('echo "AuthorizedKeysCommandUser ec2-user" >> /etc/ssh/sshd_config',
+                                shell=True, executable="/bin/bash")
+    if rc != 0:
+        print("Failed at adding authorized user line to SSHD")
         sys.exit(1)
 
     rc = subprocess.check_call("sudo systemctl restart sshd", shell=True, executable="/bin/bash")
