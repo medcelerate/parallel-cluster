@@ -126,22 +126,6 @@ WantedBy=multi-user.target
         print("Failed at starting glauth daemon.")
         sys.exit(1)
 
-    #Generate config for klp to allow for ssh public key authentication.
-
-    return 0
-
-# Install ldap client and bind into the directory.
-def install_ldap_client():
-    rc = subprocess.check_call("yum install -y openldap-clients pam_ldap nss-pam-ldapd authconfig", shell=True, executable="/bin/bash")
-    if rc != 0:
-        print("Failed at installing ldap client.")
-        sys.exit(1)
-
-    rc = subprocess.check_call("""authconfig --enableldapauth --ldapserver=ldaps://$(cat /efs/opt/hostname):389 --ldapbasedn=dc=pcprod,dc=com --enablemkhomedir --update""", shell=True, executable="/bin/bash")
-    if rc != 0:
-        print("Failed at setting ldap client.")
-        sys.exit(1)
-
     rc = subprocess.check_call("cd /opt/ && wget https://gitlab.com/iidsgt/parallel-cluster/-/raw/master/ldap_authenticator.py \
                                 && chmod +x ldap_authenticator.py", shell=True, executable="/bin/bash")
     if rc != 0:
@@ -160,6 +144,20 @@ def install_ldap_client():
     rc = subprocess.check_call("sudo systemctl restart sshd", shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at restarting sshd")
+        sys.exit(1)
+
+    return 0
+
+# Install ldap client and bind into the directory.
+def install_ldap_client():
+    rc = subprocess.check_call("yum install -y openldap-clients pam_ldap nss-pam-ldapd authconfig", shell=True, executable="/bin/bash")
+    if rc != 0:
+        print("Failed at installing ldap client.")
+        sys.exit(1)
+
+    rc = subprocess.check_call("""authconfig --enableldapauth --ldapserver=ldaps://$(cat /efs/opt/hostname):389 --ldapbasedn=dc=pcprod,dc=com --enablemkhomedir --update""", shell=True, executable="/bin/bash")
+    if rc != 0:
+        print("Failed at setting ldap client.")
         sys.exit(1)
 
     return 0
