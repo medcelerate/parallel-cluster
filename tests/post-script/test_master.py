@@ -10,7 +10,6 @@ def test_install_docker():
 def test_ldap_cert_create():
     assert ProdPostInstall.generate_ldap_ssl_cert() == 0
 
-
 def test_install_glauth():
     assert ProdPostInstall.install_glauth() == 0
 
@@ -20,5 +19,6 @@ def test_install_ldap():
 def test_install_goofys():
     assert ProdPostInstall.install_goofys("hfjdskfhdjskhdj", "fjdkjfhdskfbhj", "bucket") == 0
 
-
+def test_update_bashrc():
+    assert ProdPostInstall.update_bashrc() == 0
 

@@ -59,6 +59,8 @@ then
 fi
 """
         fp.write(fn)
+        
+    return 0
 
 # Generates self-signed ssl certifcate for glauth which handles user and group management.
 def generate_ldap_ssl_cert():
