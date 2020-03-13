@@ -209,6 +209,16 @@ tls_cacertfile /efs/certs/ldap.crt
     if rc != 0:
         print("Failed at setting ldap client.")
         sys.exit(1)
+
+    rc = subprocess.check_call("sudo systemctl restart nslcd", shell=True, executable="/bin/bash")
+    if rc != 0:
+        print("Failed at starting nslcd.")
+        sys.exit(1)
+
+    rc = subprocess.check_call("sudo systemctl restart nscd", shell=True, executable="/bin/bash")
+    if rc != 0:
+        print("Failed at starting nscd.")
+        sys.exit(1)
    
     
     return 0
