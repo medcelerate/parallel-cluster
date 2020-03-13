@@ -50,7 +50,7 @@ def add_users():
     return 0
 
 def update_bashrc():
-    with open("/etc/skel/.bash_profile", "a"):
+    with open("/etc/skel/.bash_profile", "a") as fp:
         fn = """
 if [ `last $USER | wc -l` -lt 2 ]
 then
@@ -58,6 +58,7 @@ then
   cat $HOME/.ssh/id_rsa.pub >> $HOME/.ssh/authorized_keys
 fi
 """
+    fp.write(fn)
 
 # Generates self-signed ssl certifcate for glauth which handles user and group management.
 def generate_ldap_ssl_cert():
