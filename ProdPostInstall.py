@@ -49,6 +49,16 @@ def add_users():
 
     return 0
 
+def update_bashrc():
+    with open("/etc/skel/.bash_profile", "a"):
+        fn = """
+if [ `last $USER | wc -l` -lt 2 ]
+then
+  ssh-keygen -t rsa -N "" -f $HOME/.ssh/id_rsa
+  cat $HOME/.ssh/id_rsa.pub >> $HOME/.ssh/authorized_keys
+fi
+"""
+
 # Generates self-signed ssl certifcate for glauth which handles user and group management.
 def generate_ldap_ssl_cert():
 
@@ -141,14 +151,14 @@ WantedBy=multi-user.target
         print("Failed at starting glauth daemon.")
         sys.exit(1)
 
+    with open("/efs/opt/ltpsecret", "w") as fp:
+        fp.write("55ew7o9fhdakjvnpds98rt857tbb")
+
     rc = subprocess.check_call("cd /opt/ && wget https://gitlab.com/iidsgt/parallel-cluster/-/raw/master/ldap_authenticator.py \
                                 && chmod +x ldap_authenticator.py", shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at downloading ldap authenticator.")
         sys.exit(1)
-
-    with open("/efs/opt/ltpsecret", "w") as fp:
-        fp.write("55ew7o9fhdakjvnpds98rt857tbb")
 
     rc = subprocess.check_call('echo "AuthorizedKeysCommand /opt/ldap_authenticator.py" >> /etc/ssh/sshd_config',
                                 shell=True, executable="/bin/bash")
@@ -219,7 +229,6 @@ tls_cacertfile /efs/certs/ldap.crt
     if rc != 0:
         print("Failed at starting nscd.")
         sys.exit(1)
-   
     
     return 0
 
