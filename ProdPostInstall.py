@@ -52,8 +52,7 @@ def add_users():
 def update_bashrc():
     with open("/etc/skel/.bash_profile", "a") as fp:
         fn = """
-if [ `last $USER | wc -l` -lt 2 ]
-then
+if [ `last $USER | wc -l` -lt 2 ]; then
   ssh-keygen -t rsa -N "" -f $HOME/.ssh/id_rsa
   cat $HOME/.ssh/id_rsa.pub >> $HOME/.ssh/authorized_keys
 fi
