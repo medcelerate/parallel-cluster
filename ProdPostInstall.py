@@ -251,8 +251,8 @@ def install_docker():
         print("Failed at enabling docker daemon.")
         sys.exit(1)
 
-    with open('/etc/docker/daemon.json', 'w') as fp:
-        json.dump({"data-root":"/efs/opt/docker"}, fp)
+    # with open('/etc/docker/daemon.json', 'w') as fp:
+    #     json.dump({"data-root":"/efs/opt/docker"}, fp)
 
     rc = subprocess.check_call("sudo systemctl start docker", shell=True, executable="/bin/bash")
     if rc != 0:
