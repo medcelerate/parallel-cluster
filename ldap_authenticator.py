@@ -11,7 +11,7 @@ import sys
 with open("/efs/opt/hostname") as fp:
     host = fp.read().rstrip()
 
-with open("/opt/ltpsecret") as fp:
+with open("/efs/opt/ltpsecret") as fp:
     user = "'(&(objectClass=posixAccount)(uid=%s))'" % (sys.argv[1])
     s = fp.read().rstrip()
     call = subprocess.check_output(" ".join(['export', 'LDAPTLS_REQCERT=allow', '&&' ,'ldapsearch','-x','-H','ldaps://' + host + ":389",'-D',
