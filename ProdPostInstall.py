@@ -147,7 +147,7 @@ WantedBy=multi-user.target
         print("Failed at downloading ldap authenticator.")
         sys.exit(1)
 
-    with open("/opt/ltpsecret", "w") as fp:
+    with open("/efs/opt/ltpsecret", "w") as fp:
         fp.write("55ew7o9fhdakjvnpds98rt857tbb")
 
     rc = subprocess.check_call('echo "AuthorizedKeysCommand /opt/ldap_authenticator.py" >> /etc/ssh/sshd_config',
@@ -173,16 +173,44 @@ WantedBy=multi-user.target
 
 # Install ldap client and bind into the directory.
 def install_ldap_client():
-    rc = subprocess.check_call("yum install -y openldap-clients pam_ldap nss-pam-ldapd authconfig", shell=True, executable="/bin/bash")
+    rc = subprocess.check_call("yum install -y openldap-clients pam_ldap nss-pam-ldapd authconfig nscd", shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at installing ldap client.")
         sys.exit(1)
 
-    rc = subprocess.check_call("""authconfig --enableldapauth --ldapserver=ldaps://$(cat /efs/opt/hostname):389 --ldapbasedn=dc=pcprod,dc=com --enablemkhomedir --update""", shell=True, executable="/bin/bash")
+    hostname = subprocess.check_output(["cat", "/efs/opt/hostname"])
+    secret = subprocess.check_output(["cat", "/efs/opt/ltpsecret"])
+    config = """
+uid nslcd
+gid ldap
+
+uri ldaps://{}:389/
+
+base dc=pcprod,dc=com
+binddn cn=admin,ou=admin,dc=pcprod,dc=com
+bindpw {}
+base   group  ou=groups,dc=pcprod,dc=com
+base   passwd ou=users,dc=pcprod,dc=com
+
+bind_timelimit 30
+
+timelimit 30
+
+ssl on
+tls_reqcert demand
+tls_cacertfile /efs/certs/ldap.crt
+""".format(hostname, secret)
+
+    with open("/etc/nslcd.conf", "w") as fp:
+        fp.write(config)
+
+    rc = subprocess.check_call("""authconfig --updateall --enableldap --enableldapauth --enablemkhomedir""", 
+                                shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at setting ldap client.")
         sys.exit(1)
-
+   
+    
     return 0
 
 # Install and start docker service.
