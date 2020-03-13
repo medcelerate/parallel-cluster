@@ -58,7 +58,7 @@ then
   cat $HOME/.ssh/id_rsa.pub >> $HOME/.ssh/authorized_keys
 fi
 """
-    fp.write(fn)
+        fp.write(fn)
 
 # Generates self-signed ssl certifcate for glauth which handles user and group management.
 def generate_ldap_ssl_cert():
