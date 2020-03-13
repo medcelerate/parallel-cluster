@@ -235,6 +235,11 @@ tls_cacertfile /efs/certs/ldap.crt
 
 # Install and start docker service.
 def install_docker():
+    try:
+        os.makedirs("/efs/opt/docker")
+    except:
+        pass
+
     rc = subprocess.check_call("sudo amazon-linux-extras install -y docker", shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at installing docker.")
@@ -243,6 +248,10 @@ def install_docker():
     if rc != 0:
         print("Failed at enabling docker daemon.")
         sys.exit(1)
+
+    with open('/etc/docker/daemon.json', 'w') as fp:
+        json.dump({"data-root":"/efs/opt/docker"}, fp)
+
     rc = subprocess.check_call("sudo systemctl start docker", shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at starting docker daemon.")
