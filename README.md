@@ -112,7 +112,7 @@ MasterPrivateIP: 10.0.0.66
 
 ### Tests
 
-To run tests on the post install python script simply clone the rpo and build and run the compute and master dockerfiles.
+To run tests on the post install python script simply clone the repo and build and run the compute and master dockerfiles.
 
 ***Tests will fail! Specifically the systemd start commands in docker. It is very difficult to get running without privileged containers.***
 
