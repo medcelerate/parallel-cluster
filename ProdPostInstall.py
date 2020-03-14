@@ -377,11 +377,13 @@ def main():
     # Reading this in allows us to determin what type of node this is by 
     # looking at cfn_node_type
 
-    cromwell_user = sys.argv[1]
-    cromwell_password = sys.argv[2]
-    s3_key = sys.argv[3]
-    s3_secret = sys.argv[4]
-    bucket_name = sys.argv[5]
+    #Parallel Cluster adds one extra argument, so all user supplied arguments start at 2
+
+    cromwell_user = sys.argv[2]
+    cromwell_password = sys.argv[3]
+    s3_key = sys.argv[4]
+    s3_secret = sys.argv[5]
+    bucket_name = sys.argv[6]
 
     with open("/etc/parallelcluster/cfnconfig") as fp:
         for line in fp.readlines():
