@@ -47,6 +47,11 @@ def add_users():
         print("Failed at adding cromwell user.")
         sys.exit(1)
 
+    rc = subprocess.check_call("sudo usermod -a -G docker cromwell", shell=True, executable="/bin/bash")
+    if rc != 0:
+        print("Failed at adding docker group to cromwell user.")
+        sys.exit(1)
+
     return 0
 
 def update_linux_profile():
@@ -339,6 +344,11 @@ java -Dconfig.file=/opt/cromwell/cromwell.conf -jar /opt/cromwell/{} server >> /
     rc = subprocess.check_call("chmod +x /opt/cromwell/run_cromwell_server.sh", shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at making cromwell script executable.")
+        sys.exit(1)
+
+    rc = subprocess.check_call('sudo chown -R cromwell /opt/cromwell && sudo chown cromwell /opt/cromwell/*', shell=True, executable="/bin/bash")
+    if rc != 0:
+        print("Failed at changing ownership of /op/cromwell to cromwell.")
         sys.exit(1)
 
 # Writes the systemd config file for cromwell
