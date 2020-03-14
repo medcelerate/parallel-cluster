@@ -410,8 +410,8 @@ def main():
 
     if instance_type == "MasterServer":
         install_utils()
-        add_users()
         install_docker()
+        add_users()
         generate_ldap_ssl_cert()
         install_goofys(s3_key, s3_secret, bucket_name)
         install_glauth()
