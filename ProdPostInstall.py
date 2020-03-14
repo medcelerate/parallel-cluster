@@ -49,15 +49,26 @@ def add_users():
 
     return 0
 
-def update_bashrc():
-    with open("/etc/skel/.bash_profile", "a") as fp:
+def update_linux_profile():
+    with open('/etc/skel/.initkeys', 'w') as fp:
+        fp.write('0')
+
+    with open("/etc/profile.d/create_keys.sh", "a") as fp:
         fn = """
-if [ `last $USER | wc -l` -lt 2 ]; then
-  ssh-keygen -t rsa -N "" -f $HOME/.ssh/id_rsa
-  cat $HOME/.ssh/id_rsa.pub >> $HOME/.ssh/authorized_keys
-fi
+#!/bin/bash
+
+if [ -e $HOME/.initkeys ]  
+then  
+    ssh-keygen -t rsa -N "" -f $HOME/.ssh/id_rsa
+    cat $HOME/.ssh/id_rsa.pub >> $HOME/.ssh/authorized_keys
+    rm -f $HOME/.initkeys
+else  
+    :
+fi  
 """
         fp.write(fn)
+
+    rc = subprocess.check_call("chmod +x")
         
     return 0
 
