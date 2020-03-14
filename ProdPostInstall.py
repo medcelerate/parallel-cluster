@@ -411,7 +411,7 @@ def main():
         install_goofys(s3_key, s3_secret, bucket_name)
         install_glauth()
         install_ldap_client()
-        update_bashrc()
+        update_linux_profile()
         install_cromwell(cromwell_user, cromwell_password)
 
     else:
