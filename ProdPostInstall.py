@@ -353,8 +353,7 @@ java -Dconfig.file=/opt/cromwell/cromwell.conf -jar /opt/cromwell/{} server >> /
 
 # Writes the systemd config file for cromwell
 
-    service_file = """
-[Unit]
+    service_file = """[Unit]
 Description=Starts the Cromwell server
 
 [Service]
