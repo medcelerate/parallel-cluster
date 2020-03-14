@@ -321,8 +321,7 @@ def install_cromwell(cromwell_user, cromwell_password):
         print("Failed at downloading cromwell.")
         sys.exit(1)
 
-    cromwell_script = """
-#!/bin/bash
+    cromwell_script = """#!/bin/bash
 java -Dconfig.file=/opt/cromwell/cromwell.conf -jar /opt/cromwell/{} server >> /tmp/cromwell.log
 """.format(cromwell_name)
 
