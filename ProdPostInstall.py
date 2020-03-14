@@ -61,6 +61,8 @@ if [ -e $HOME/.initkeys ]
 then  
     ssh-keygen -t rsa -N "" -f $HOME/.ssh/id_rsa
     cat $HOME/.ssh/id_rsa.pub >> $HOME/.ssh/authorized_keys
+    mkdir -p /fsx/scratch/$USER
+    ln -s /fsx/scratch/$USER $HOME/fsx
     rm -f $HOME/.initkeys
 else  
     :
@@ -258,7 +260,7 @@ def install_docker():
     if rc != 0:
         print("Failed at enabling docker daemon.")
         sys.exit(1)
-        
+
     rc = subprocess.check_call("sudo systemctl start docker", shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at starting docker daemon.")
