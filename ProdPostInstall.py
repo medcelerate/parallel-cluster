@@ -67,8 +67,6 @@ else
 fi  
 """
         fp.write(fn)
-
-    rc = subprocess.check_call("chmod +x")
         
     return 0
 
