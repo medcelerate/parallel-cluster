@@ -50,7 +50,6 @@ We keep 1 compute node constantly alive in order to kick off workloads without h
 - Monthly dump of docker cache
 - Monthly sync of reference files to disk
 
-
 ### Deploying Parallel-Cluster
 
 Before running this make sure your aws cli is setup with ```aws configure```.
@@ -158,6 +157,42 @@ scontrol show job 4617
 scancel {jobid}
 scancel 4617
 ```
+
+### Extras
+
+#### LDAP
+
+GLAuth is setup on the Master node to serve as the simple directory server. Users and groups are added by adding to the glauth.cfg file in ```/opt/glauth/```.
+
+User blocks are created as shown below. 
+
+```conf
+[[users]]
+  name = "user_name"
+  givenname="user"
+  sn = "name"
+  mail = "user_name@mail.com"
+  unixid = 8002
+  primarygroup = 8501
+  loginShell = "/bin/bash"
+  homeDir = "/path/to/home/dir"
+  sshkeys = ["ssh-rsa foo bar"]
+```
+
+There are also password fields that can be added if you would like to enable password based authentication, however in our setup it is best to only use public/private key authentication.
+
+Groups are created as show below.
+
+```conf
+[[groups]]
+    name = "docker"
+    unixid = 980
+    includegroups = [8501]
+
+```
+
+The includegroups section indicates which group this group should be a secondary group of. So if you had another at 8501 this would now be a group all members of 8501 would be a part of.
+
 
 ### Notes
 
