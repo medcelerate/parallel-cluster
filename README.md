@@ -196,7 +196,7 @@ The ```includegroups``` section indicates which group this group should be a sec
 
 #### Jupyter
 
-**Requires Anaconda to be installed**
+**Requires Anaconda to be installed!**
 
 Before running a notebook make sure to set a password otherwise it will have issues connecting.
 
@@ -205,6 +205,8 @@ jupyter notebook password
 ```
 
 You can use the following bash function to launch an interactive notebook. You will need to have the full version of anaconda installed in your home directory. 
+
+This can be placed in your .bash_profile or called via script by adding ```nb``` at the end of the file it is pasted in.
 
 ```bash
 nb() {
