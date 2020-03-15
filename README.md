@@ -194,6 +194,43 @@ Groups are created as show below.
 The ```includegroups``` section indicates which group this group should be a secondary group of. So if you had another at 8501 this would now be a group all members of 8501 would be a part of.
 
 
+#### Jupyter
+
+**Requires Anaconda to be installed**
+
+Before running a notebook make sure to set a password otherwise it will have issues connecting.
+
+```bash
+jupyter notebook password
+```
+
+You can use the following bash function to launch an interactive notebook. You will need to have the full version of anaconda installed in your home directory. 
+
+```bash
+nb() {
+    RED='\033[0;31m'
+    CYAN='\033[0;36m'
+    YELLOW='\033[1;33m'
+    NC='\033[0m'
+    while
+        port=$(shuf -n 1 -i 49152-65535)
+        netstat -atun | grep -q "$port"
+    do
+        continue
+    done
+    jdc=$(sbatch -p compute --wrap="jupyter notebook --no-browser --port=$port")
+    job_id=$(echo "$jdc" | sed -r  's/^[^0-9]*([0-9]+).*/\1/')
+    node=$(scontrol show job "$job_id" | sed -n 's/   NodeList=//p')
+    while [ "$node" == "(null)" ]
+    do
+        node=$(scontrol show job "$job_id" | sed -n 's/   NodeList=//p')
+    done
+    echo -e "${RED}Paste the following to connect to the notebook"
+    echo -e "${YELLOW}ssh -t -t $USER@cluster.iidsgt.org -L $port:localhost:$port ssh $node -L $port:localhost:$port"
+    echo -e "\n${CYAN}Then visit: http://localhost:$port ${NC}"
+}
+```
+
 ### Notes
 
 EFA may work on m5dn but it isn't in the notes
