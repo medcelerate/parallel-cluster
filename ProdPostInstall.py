@@ -72,6 +72,7 @@ then
     ssh-keygen -t rsa -N "" -f $HOME/.ssh/id_rsa
     cat $HOME/.ssh/id_rsa.pub >> $HOME/.ssh/authorized_keys
     mkdir /fsx/scratch/$USER
+    chmod u+s /fsx/scratch/$USER
     ln -s /fsx/scratch/$USER $HOME/fsx
     rm -f $HOME/.initkeys
 else  
