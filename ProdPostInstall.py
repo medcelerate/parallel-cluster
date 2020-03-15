@@ -55,6 +55,11 @@ def add_users():
     return 0
 
 def update_linux_profile():
+    try:
+        os.makedirs("/fsx/scratch")
+    except:
+        pass
+
     with open('/etc/skel/.initkeys', 'w') as fp:
         fp.write('0')
 
@@ -66,7 +71,7 @@ if [ -e $HOME/.initkeys ]
 then  
     ssh-keygen -t rsa -N "" -f $HOME/.ssh/id_rsa
     cat $HOME/.ssh/id_rsa.pub >> $HOME/.ssh/authorized_keys
-    mkdir -p /fsx/scratch/$USER
+    mkdir /fsx/scratch/$USER
     ln -s /fsx/scratch/$USER $HOME/fsx
     rm -f $HOME/.initkeys
 else  
