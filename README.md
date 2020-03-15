@@ -191,7 +191,7 @@ Groups are created as show below.
 
 ```
 
-The includegroups section indicates which group this group should be a secondary group of. So if you had another at 8501 this would now be a group all members of 8501 would be a part of.
+The ```includegroups``` section indicates which group this group should be a secondary group of. So if you had another at 8501 this would now be a group all members of 8501 would be a part of.
 
 
 ### Notes
