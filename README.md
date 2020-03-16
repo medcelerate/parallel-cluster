@@ -247,7 +247,7 @@ nb() {
     do
         node=$(scontrol show job "$job_id" | sed -n 's/   NodeList=//p')
     done
-    echo -e "${RED}Paste the following to connect to the notebook"
+    echo -e "${RED}Paste the following in a NEW SHELL to connect to the notebook"
     echo -e "${YELLOW}ssh -t -t $USER@cluster.iidsgt.org -L $port:localhost:$port ssh $node -L $port:localhost:$port"
     echo -e "\n${CYAN}Then visit: http://localhost:$port ${NC}"
 }
