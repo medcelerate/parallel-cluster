@@ -194,6 +194,24 @@ Groups are created as show below.
 The ```includegroups``` section indicates which group this group should be a secondary group of. So if you had another at 8501 this would now be a group all members of 8501 would be a part of.
 
 
+#### Anaconda
+
+Anaconda is very useful for managing bio tools. It can be downloaded from [here](https://repo.anaconda.com/archive/Anaconda3-2020.02-MacOSX-x86_64.sh). 
+
+Simply run the command below to install it in your home directory.
+
+```bash
+bash ./Anaconda3-2020.02-MacOSX-x86_64.sh
+```
+This needs to to be done if you want to run jupyter notebooks.
+
+Useful conda channels:
+
+```
+conda config --add channels conda-forge
+conda config --add channels bioconda
+```
+
 #### Jupyter
 
 **Requires Anaconda to be installed!**
