@@ -196,12 +196,12 @@ The ```includegroups``` section indicates which group this group should be a sec
 
 #### Anaconda
 
-Anaconda is very useful for managing bio tools. It can be downloaded from [here](https://repo.anaconda.com/archive/Anaconda3-2020.02-MacOSX-x86_64.sh). 
+Anaconda is very useful for managing bio tools. It can be downloaded from [here](https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh). 
 
 Simply run the command below to install it in your home directory.
 
 ```bash
-bash ./Anaconda3-2020.02-MacOSX-x86_64.sh
+bash ./Anaconda3-2020.02-Linux-x86_64.sh
 ```
 This needs to to be done if you want to run jupyter notebooks.
 
