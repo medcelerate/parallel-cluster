@@ -239,7 +239,6 @@ nb() {
         continue
     done
     # The --exclusive flag can be added if you need the whole node, it may take some time to startup though.
-    salloc -p compute --nodes=1
     jdc=$(sbatch -p compute --wrap="jupyter notebook --no-browser --port=$port")
     job_id=$(echo "$jdc" | sed -r  's/^[^0-9]*([0-9]+).*/\1/')
     node=$(scontrol show job "$job_id" | sed -n 's/   NodeList=//p')
