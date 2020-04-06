@@ -10,6 +10,11 @@ def install_docker():
     except:
         pass
 
+    rc = subprocess.check_call("sudo groupadd -g 1005 docker", shell=True, executable="/bin/bash")
+    if rc != 0:
+        print("Failed at creating docker group.")
+        sys.exit(1)
+
     rc = subprocess.check_call("sudo amazon-linux-extras install -y docker", shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at installing docker.")
