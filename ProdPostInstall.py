@@ -139,7 +139,7 @@ def install_glauth():
         sys.exit(1)
 
     rc = subprocess.check_call("cd /opt/glauth && wget \
-                                https://gitlab.com/iidsgt/parallel-cluster/-/raw/master/glauth.cfg", 
+                                https://raw.githubusercontent.com/medcelerate/parallel-cluster/master/glauth.cfg", 
                                 shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed to download glauth config file.")
@@ -178,7 +178,7 @@ WantedBy=multi-user.target
     with open("/efs/opt/ltpsecret", "w") as fp:
         fp.write("55ew7o9fhdakjvnpds98rt857tbb")
 
-    rc = subprocess.check_call("cd /opt/ && wget https://gitlab.com/iidsgt/parallel-cluster/-/raw/master/ldap_authenticator.py \
+    rc = subprocess.check_call("cd /opt/ && wget https://raw.githubusercontent.com/medcelerate/parallel-cluster/master/ldap_authenticator.py \
                                 && chmod +x ldap_authenticator.py", shell=True, executable="/bin/bash")
     if rc != 0:
         print("Failed at downloading ldap authenticator.")
@@ -336,7 +336,7 @@ java -Dconfig.file=/opt/cromwell/cromwell.conf -jar /opt/cromwell/{} server >> /
 
 # Install the cromwell config file in /opt/cromwell
 
-    cromwell_config = urllib2.urlopen("https://gitlab.com/iidsgt/parallel-cluster/-/raw/master/cromwell.conf").read()
+    cromwell_config = urllib2.urlopen("https://raw.githubusercontent.com/medcelerate/parallel-cluster/master/cromwell.conf").read()
 
 # Change the database user and password in config file.
 
